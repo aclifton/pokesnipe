@@ -161,6 +161,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             // guidelines.
             bindPreferenceSummaryToValue(findPreference("filter"));
             bindPreferenceSummaryToValue(findPreference("sort"));
+            bindPreferenceSummaryToValue(findPreference("bbox"));
         }
 
         @Override

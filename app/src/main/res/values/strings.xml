@@ -6,6 +6,7 @@
 
     <!-- Strings related to Settings -->
 
+    <string name="pref_title_bbox">Bounding Box</string>
     <string name="pref_title_filter">Filter</string>
     <string name="pref_default_display_name"></string>
 

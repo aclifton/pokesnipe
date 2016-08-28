@@ -33,7 +33,8 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int CODE = 1;
-    private String requestUrl = "https://skiplagged.com/api/pokemon.php?bounds=40.701339,-74.0282637,40.80042,-73.9268037";
+    private static final String DEFAULT_BBOX = "40.701339,-74.0282637,40.80042,-73.9268037";
+    private String requestUrlFormatString = "https://skiplagged.com/api/pokemon.php?bounds=%s";
 
     private RecyclerView recyclerView;
     private SharedPreferences sharedPreferences;
@@ -47,8 +48,7 @@ public class MainActivity extends AppCompatActivity {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         recyclerView = (RecyclerView) findViewById(R.id.list);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        pokeFindTask = new PokeFindTask();
-        pokeFindTask.execute();
+        refresh();
     }
 
     @Override
@@ -64,10 +64,7 @@ public class MainActivity extends AppCompatActivity {
             intent.setClass(this, SettingsActivity.class);
             startActivityForResult(intent, CODE);
         } else if (item.getItemId() == R.id.refresh) {
-            if (pokeFindTask == null) {
-                pokeFindTask = new PokeFindTask();
-                pokeFindTask.execute();
-            }
+            refresh();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -77,16 +74,15 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
     }
 
-    private class PokeFindTask extends AsyncTask<Void, Void, String> {
-
+    private class PokeFindTask extends AsyncTask<String, Void, String> {
         @Override
-        protected String doInBackground(Void... params) {
+        protected String doInBackground(String... params) {
             HttpURLConnection connection = null;
             InputStream inputStream = null;
             BufferedReader bufferedReader = null;
             String json = null;
             try {
-                URL url = new URL(requestUrl);
+                URL url = new URL(params[0]);
                 connection = (HttpsURLConnection) url.openConnection();
                 connection.setRequestMethod("GET");
                 connection.connect();
@@ -156,6 +152,18 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void refresh(){
+        if (pokeFindTask == null) {
+            String bbox=sharedPreferences.getString("bbox","");
+            if(bbox == null || bbox.length() == 0 || bbox.split(",").length !=4){
+                bbox = DEFAULT_BBOX;
+            }
+            String url = String.format(requestUrlFormatString, bbox);
+            pokeFindTask = new PokeFindTask();
+            pokeFindTask.execute(url);
+        }
+    }
+
     private static void tryClose(Closeable closeable) {
         if (closeable != null) {
             try {
@@ -166,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private ArrayList<Pokemon> filter(ArrayList<Pokemon> pokemons, String... filters) {
+    private static ArrayList<Pokemon> filter(ArrayList<Pokemon> pokemons, String... filters) {
         ArrayList<Pokemon> filtered = new ArrayList<>();
         for (Pokemon pokemon : pokemons) {
             for (String s : filters) {

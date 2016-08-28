@@ -117,18 +117,16 @@ public class MainActivity extends AppCompatActivity {
                 for (int x = 0; x < pokemons.length(); x++) {
                     pokemonArray.add(Pokemon.fromJSONObject((JSONObject) pokemons.get(x)));
                 }
-                PokeAdapter listAdapter = (PokeAdapter) recyclerView.getAdapter();
-                if (listAdapter == null) {
-                    listAdapter = new PokeAdapter(MainActivity.this, pokemonArray);
-                    recyclerView.swapAdapter(listAdapter, true);
-                }
+                String filterString = sharedPreferences.getString("filter", "");
+                String[] filters = filterString.split(",");
+                ArrayList<Pokemon> filterPokemon = filterString.length() == 0 ? pokemonArray : filter(pokemonArray, filters);
                 int sort = Integer.valueOf(sharedPreferences.getString("sort", "0"));
                 switch (sort) {
                     case 0:
-                        Collections.sort(pokemonArray, Comparators.ID_COMPARATOR);
+                        Collections.sort(filterPokemon, Comparators.ID_COMPARATOR);
                         break;
                     case 1:
-                        Collections.sort(pokemonArray, Comparators.NAME_COMPARATOR);
+                        Collections.sort(filterPokemon, Comparators.NAME_COMPARATOR);
                         break;
                     case 2:
                         //Collections.sort(pokemonArray, Comparators.ID_COMPARATOR);
@@ -136,7 +134,11 @@ public class MainActivity extends AppCompatActivity {
                     default:
                         break;
                 }
-                listAdapter.notifyDataSetChanged();
+                PokeAdapter listAdapter = (PokeAdapter) recyclerView.getAdapter();
+                if (listAdapter == null) {
+                    listAdapter = new PokeAdapter(MainActivity.this, filterPokemon);
+                    recyclerView.swapAdapter(listAdapter, true);
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -151,6 +153,19 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
+    }
+
+    private ArrayList<Pokemon> filter(ArrayList<Pokemon> pokemons, String... filters) {
+        ArrayList<Pokemon> filtered = new ArrayList<>();
+        for (Pokemon pokemon : pokemons) {
+            for (String s : filters) {
+                if (s.equalsIgnoreCase(pokemon.getName())) {
+                    filtered.add(pokemon);
+                    continue;
+                }
+            }
+        }
+        return filtered;
     }
 
 }

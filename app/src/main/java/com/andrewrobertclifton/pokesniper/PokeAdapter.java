@@ -9,15 +9,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 /**
  * Created by user on 8/28/16.
  */
 public class PokeAdapter extends RecyclerView.Adapter<PokeAdapter.ViewHolder> {
     private Context context;
-    private JSONObject[] mDataset;
+    private Pokemon[] mDataset;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -37,7 +34,7 @@ public class PokeAdapter extends RecyclerView.Adapter<PokeAdapter.ViewHolder> {
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public PokeAdapter(Context context,JSONObject[] myDataset) {
+    public PokeAdapter(Context context, Pokemon[] myDataset) {
         mDataset = myDataset;
         this.context = context;
     }
@@ -61,22 +58,15 @@ public class PokeAdapter extends RecyclerView.Adapter<PokeAdapter.ViewHolder> {
     public void onBindViewHolder(ViewHolder holder, int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
-        JSONObject jsonObject = mDataset[position];
-        try {
-            String name = jsonObject.getString("pokemon_name");
-            final Double lat = jsonObject.getDouble("latitude");
-            final Double lon = jsonObject.getDouble("longitude");
-            holder.txtName.setText(name);
-            holder.txtLocation.setText(lat + "," + lon);
-            holder.button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    sendGPSUpdateIntent(context,lat,lon);
-                }
-            });
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        final Pokemon pokemon = mDataset[position];
+        holder.txtName.setText(pokemon.getName());
+        holder.txtLocation.setText(pokemon.getLat() + "," + pokemon.getLon());
+        holder.button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendGPSUpdateIntent(context, pokemon.getLat(), pokemon.getLon());
+            }
+        });
     }
 
     // Return the size of your dataset (invoked by the layout manager)

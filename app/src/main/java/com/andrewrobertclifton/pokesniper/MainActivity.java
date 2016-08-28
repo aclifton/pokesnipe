@@ -3,14 +3,11 @@ package com.andrewrobertclifton.pokesniper;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import org.json.JSONArray;
@@ -47,16 +44,16 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_menu,menu);
+        getMenuInflater().inflate(R.menu.main_menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == R.id.settings){
-            Intent intent=new Intent();
-            intent.setClass(this,SettingsActivity.class);
-            startActivityForResult(intent,CODE);
+        if (item.getItemId() == R.id.settings) {
+            Intent intent = new Intent();
+            intent.setClass(this, SettingsActivity.class);
+            startActivityForResult(intent, CODE);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -109,13 +106,13 @@ public class MainActivity extends AppCompatActivity {
             try {
                 JSONObject jsonObject = new JSONObject(json);
                 JSONArray pokemons = (JSONArray) jsonObject.get("pokemons");
-                JSONObject[] pokemonArray = new JSONObject[pokemons.length()];
+                Pokemon[] pokemonArray = new Pokemon[pokemons.length()];
                 for (int x = 0; x < pokemons.length(); x++) {
-                    pokemonArray[x] = (JSONObject) pokemons.get(x);
+                    pokemonArray[x] = Pokemon.fromJSONObject((JSONObject) pokemons.get(x));
                 }
                 PokeAdapter listAdapter = (PokeAdapter) recyclerView.getAdapter();
                 if (listAdapter == null) {
-                    listAdapter = new PokeAdapter(MainActivity.this,pokemonArray);
+                    listAdapter = new PokeAdapter(MainActivity.this, pokemonArray);
                     recyclerView.swapAdapter(listAdapter, true);
                 }
 

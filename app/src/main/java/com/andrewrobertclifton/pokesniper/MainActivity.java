@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         recyclerView = (RecyclerView) findViewById(R.id.list);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        new PokeFindTask().execute();
     }
 
     @Override
@@ -63,7 +64,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        new PokeFindTask().execute();
     }
 
     private class PokeFindTask extends AsyncTask<Void, Void, String> {

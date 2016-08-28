@@ -1,8 +1,10 @@
 package com.andrewrobertclifton.pokesniper;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,6 +24,8 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -32,11 +36,14 @@ public class MainActivity extends AppCompatActivity {
     private String requestUrl = "https://skiplagged.com/api/pokemon.php?bounds=40.701339,-74.0282637,40.80042,-73.9268037";
 
     private RecyclerView recyclerView;
+    private SharedPreferences sharedPreferences;
+    private ArrayList<Pokemon> pokemonArray;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         recyclerView = (RecyclerView) findViewById(R.id.list);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         new PokeFindTask().execute();
@@ -106,16 +113,30 @@ public class MainActivity extends AppCompatActivity {
             try {
                 JSONObject jsonObject = new JSONObject(json);
                 JSONArray pokemons = (JSONArray) jsonObject.get("pokemons");
-                Pokemon[] pokemonArray = new Pokemon[pokemons.length()];
+                pokemonArray = new ArrayList<>(pokemons.length());
                 for (int x = 0; x < pokemons.length(); x++) {
-                    pokemonArray[x] = Pokemon.fromJSONObject((JSONObject) pokemons.get(x));
+                    pokemonArray.add(Pokemon.fromJSONObject((JSONObject) pokemons.get(x)));
                 }
                 PokeAdapter listAdapter = (PokeAdapter) recyclerView.getAdapter();
                 if (listAdapter == null) {
                     listAdapter = new PokeAdapter(MainActivity.this, pokemonArray);
                     recyclerView.swapAdapter(listAdapter, true);
                 }
-
+                int sort = Integer.valueOf(sharedPreferences.getString("sort", "0"));
+                switch (sort) {
+                    case 0:
+                        Collections.sort(pokemonArray, Comparators.ID_COMPARATOR);
+                        break;
+                    case 1:
+                        Collections.sort(pokemonArray, Comparators.NAME_COMPARATOR);
+                        break;
+                    case 2:
+                        //Collections.sort(pokemonArray, Comparators.ID_COMPARATOR);
+                        break;
+                    default:
+                        break;
+                }
+                listAdapter.notifyDataSetChanged();
             } catch (JSONException e) {
                 e.printStackTrace();
             }

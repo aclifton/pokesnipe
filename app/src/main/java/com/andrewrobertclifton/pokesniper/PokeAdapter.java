@@ -9,12 +9,14 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.util.List;
+
 /**
  * Created by user on 8/28/16.
  */
 public class PokeAdapter extends RecyclerView.Adapter<PokeAdapter.ViewHolder> {
     private Context context;
-    private Pokemon[] mDataset;
+    private List<Pokemon> mDataset;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -34,7 +36,7 @@ public class PokeAdapter extends RecyclerView.Adapter<PokeAdapter.ViewHolder> {
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public PokeAdapter(Context context, Pokemon[] myDataset) {
+    public PokeAdapter(Context context, List<Pokemon> myDataset) {
         mDataset = myDataset;
         this.context = context;
     }
@@ -58,7 +60,7 @@ public class PokeAdapter extends RecyclerView.Adapter<PokeAdapter.ViewHolder> {
     public void onBindViewHolder(ViewHolder holder, int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
-        final Pokemon pokemon = mDataset[position];
+        final Pokemon pokemon = mDataset.get(position);
         holder.txtName.setText(pokemon.getName());
         holder.txtLocation.setText(pokemon.getLat() + "," + pokemon.getLon());
         holder.button.setOnClickListener(new View.OnClickListener() {
@@ -72,7 +74,7 @@ public class PokeAdapter extends RecyclerView.Adapter<PokeAdapter.ViewHolder> {
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        return mDataset.length;
+        return mDataset.size();
     }
 
     public void sendGPSUpdateIntent(Context context, double lat, double lon) {

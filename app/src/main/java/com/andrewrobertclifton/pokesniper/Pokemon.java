@@ -31,6 +31,20 @@ public class Pokemon {
         this.expireTime = expireTime;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof Pokemon) {
+            Pokemon other = (Pokemon) o;
+            return getId() == other.getId()
+                    && getName().equals(other.getName())
+                    && getExpireTime() == other.getExpireTime()
+                    && getLon() == other.getLon()
+                    && getLat() == other.getLat();
+        } else {
+            return false;
+        }
+    }
+
     public int getId() {
         return id;
     }

@@ -120,6 +120,9 @@ public class MainActivity extends AppCompatActivity {
                 String filterString = sharedPreferences.getString("filter", "");
                 String[] filters = filterString.split(",");
                 ArrayList<Pokemon> filterPokemon = filterString.length() == 0 ? pokemonArray : filter(pokemonArray, filters);
+                if(filterPokemon.size() == 0 ){
+                    filterPokemon.add(new Pokemon(-1,"Missingno",0,0,0));
+                }
                 int sort = Integer.valueOf(sharedPreferences.getString("sort", "0"));
                 switch (sort) {
                     case 0:

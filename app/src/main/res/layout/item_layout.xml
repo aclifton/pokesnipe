@@ -6,7 +6,7 @@
 
     <TextView
         android:id="@+id/txtName"
-        android:text="hi"
+        android:text="name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
@@ -14,11 +14,20 @@
 
     <TextView
         android:id="@+id/txtLocation"
-        android:text="hi"
+        android:text="location"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/txtName"/>
+
+    <TextView
+        android:id="@+id/txtExpire"
+        android:text="expire"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@id/txtName"
+        android:paddingLeft="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
     <Button
         android:id="@+id/btnGoto"

@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -25,13 +26,15 @@ public class PokeAdapter extends RecyclerView.Adapter<PokeAdapter.ViewHolder> {
         // each data item is just a string in this case
         public TextView txtName;
         public TextView txtLocation;
+        public TextView txtExpire;
         public Button button;
 
-        public ViewHolder(View itemView, TextView txtName, TextView txtLocation, Button button) {
+        public ViewHolder(View itemView) {
             super(itemView);
-            this.txtName = txtName;
-            this.txtLocation = txtLocation;
-            this.button = button;
+            this.txtName = (TextView) itemView.findViewById(R.id.txtName);
+            this.txtLocation = (TextView) itemView.findViewById(R.id.txtLocation);
+            this.txtExpire = (TextView) itemView.findViewById(R.id.txtExpire);
+            this.button = (Button) itemView.findViewById(R.id.btnGoto);
         }
     }
 
@@ -48,10 +51,7 @@ public class PokeAdapter extends RecyclerView.Adapter<PokeAdapter.ViewHolder> {
         // create a new view
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_layout, parent, false);
-        TextView txtName = (TextView) v.findViewById(R.id.txtName);
-        TextView txtLocation = (TextView) v.findViewById(R.id.txtLocation);
-        Button button = (Button) v.findViewById(R.id.btnGoto);
-        ViewHolder vh = new ViewHolder(v, txtName, txtLocation, button);
+        ViewHolder vh = new ViewHolder(v);
         return vh;
     }
 
@@ -63,6 +63,7 @@ public class PokeAdapter extends RecyclerView.Adapter<PokeAdapter.ViewHolder> {
         final Pokemon pokemon = mDataset.get(position);
         holder.txtName.setText(pokemon.getName());
         holder.txtLocation.setText(pokemon.getLat() + "," + pokemon.getLon());
+        holder.txtExpire.setText(String.format("%ds",pokemon.getExpireTime()-System.currentTimeMillis()/1000));
         holder.button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

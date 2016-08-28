@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private SharedPreferences sharedPreferences;
     private ArrayList<Pokemon> pokemonArray;
+    PokeFindTask pokeFindTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +47,8 @@ public class MainActivity extends AppCompatActivity {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         recyclerView = (RecyclerView) findViewById(R.id.list);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        new PokeFindTask().execute();
+        pokeFindTask = new PokeFindTask();
+        pokeFindTask.execute();
     }
 
     @Override
@@ -61,6 +63,11 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent();
             intent.setClass(this, SettingsActivity.class);
             startActivityForResult(intent, CODE);
+        } else if (item.getItemId() == R.id.refresh) {
+            if (pokeFindTask == null) {
+                pokeFindTask = new PokeFindTask();
+                pokeFindTask.execute();
+            }
         }
         return super.onOptionsItemSelected(item);
     }
@@ -120,8 +127,8 @@ public class MainActivity extends AppCompatActivity {
                 String filterString = sharedPreferences.getString("filter", "");
                 String[] filters = filterString.split(",");
                 ArrayList<Pokemon> filterPokemon = filterString.length() == 0 ? pokemonArray : filter(pokemonArray, filters);
-                if(filterPokemon.size() == 0 ){
-                    filterPokemon.add(new Pokemon(-1,"Missingno",0,0,0));
+                if (filterPokemon.size() == 0) {
+                    filterPokemon.add(new Pokemon(-1, "Missingno", 0, 0, 0));
                 }
                 int sort = Integer.valueOf(sharedPreferences.getString("sort", "0"));
                 switch (sort) {
@@ -138,13 +145,14 @@ public class MainActivity extends AppCompatActivity {
                         break;
                 }
                 PokeAdapter listAdapter = (PokeAdapter) recyclerView.getAdapter();
-                if (listAdapter == null) {
+                if (true) {
                     listAdapter = new PokeAdapter(MainActivity.this, filterPokemon);
                     recyclerView.swapAdapter(listAdapter, true);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+            pokeFindTask = null;
         }
     }
 

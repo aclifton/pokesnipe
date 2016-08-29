@@ -113,9 +113,9 @@ public class MainActivity extends AppCompatActivity {
                     Log.d(TAG, json);
                 }
             } catch (MalformedURLException e) {
-                e.printStackTrace();
+                Log.e(TAG, "MalformedURLException", e);
             } catch (IOException e) {
-                e.printStackTrace();
+                Log.e(TAG, "IOException", e);
             } finally {
                 if (connection != null) {
                     connection.disconnect();
@@ -129,17 +129,21 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String json) {
             try {
-                JSONObject jsonObject = new JSONObject(json);
-                JSONArray pokemons = (JSONArray) jsonObject.get("pokemons");
-                pokemonArray = new ArrayList<>(pokemons.length());
-                for (int x = 0; x < pokemons.length(); x++) {
-                    pokemonArray.add(Pokemon.fromJSONObject((JSONObject) pokemons.get(x)));
+                if (json != null) {
+                    JSONObject jsonObject = new JSONObject(json);
+                    JSONArray pokemons = (JSONArray) jsonObject.get("pokemons");
+                    pokemonArray = new ArrayList<>(pokemons.length());
+                    for (int x = 0; x < pokemons.length(); x++) {
+                        pokemonArray.add(Pokemon.fromJSONObject((JSONObject) pokemons.get(x)));
+                    }
+                } else {
+                    pokemonArray = new ArrayList<>(1);
                 }
                 String filterString = sharedPreferences.getString("filter", "");
                 String[] filters = filterString.split(",");
                 ArrayList<Pokemon> filterPokemon = filterString.length() == 0 ? pokemonArray : filter(pokemonArray, filters);
                 if (filterPokemon.size() == 0) {
-                    filterPokemon.add(new Pokemon(-1, "Missingno", 0, 0, 0));
+                    filterPokemon.add(new Pokemon(-1, "Missingno", 0, 0, System.currentTimeMillis()/1000));
                 }
                 int sort = Integer.valueOf(sharedPreferences.getString("sort", "0"));
                 switch (sort) {
@@ -154,8 +158,7 @@ public class MainActivity extends AppCompatActivity {
                             ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_REQUEST);
                             pokeFindTask = null;
                             return;
-                        }
-                        else {
+                        } else {
                             Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                             Collections.sort(filterPokemon, new Comparators.DistanceComparator(location.getLatitude(), location.getLongitude()));
                         }
@@ -163,13 +166,10 @@ public class MainActivity extends AppCompatActivity {
                     default:
                         break;
                 }
-                PokeAdapter listAdapter = (PokeAdapter) recyclerView.getAdapter();
-                if (true) {
-                    listAdapter = new PokeAdapter(MainActivity.this, filterPokemon);
-                    recyclerView.swapAdapter(listAdapter, true);
-                }
+                PokeAdapter listAdapter = new PokeAdapter(MainActivity.this, filterPokemon);
+                recyclerView.swapAdapter(listAdapter, true);
             } catch (JSONException e) {
-                e.printStackTrace();
+                Log.e(TAG, "JSONException", e);
             }
             pokeFindTask = null;
         }

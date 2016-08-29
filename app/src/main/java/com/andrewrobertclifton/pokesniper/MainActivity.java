@@ -1,10 +1,17 @@
 package com.andrewrobertclifton.pokesniper;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -34,8 +41,10 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int CODE = 1;
     private static final String DEFAULT_BBOX = "40.701339,-74.0282637,40.80042,-73.9268037";
+    private static final int PERMISSION_REQUEST = 5;
     private String requestUrlFormatString = "https://skiplagged.com/api/pokemon.php?bounds=%s";
 
+    private LocationManager locationManager;
     private RecyclerView recyclerView;
     private SharedPreferences sharedPreferences;
     private ArrayList<Pokemon> pokemonArray;
@@ -45,10 +54,16 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         recyclerView = (RecyclerView) findViewById(R.id.list);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         refresh();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     @Override
@@ -135,7 +150,15 @@ public class MainActivity extends AppCompatActivity {
                         Collections.sort(filterPokemon, Comparators.NAME_COMPARATOR);
                         break;
                     case 2:
-                        //Collections.sort(pokemonArray, Comparators.ID_COMPARATOR);
+                        if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_REQUEST);
+                            pokeFindTask = null;
+                            return;
+                        }
+                        else {
+                            Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                            Collections.sort(filterPokemon, new Comparators.DistanceComparator(location.getLatitude(), location.getLongitude()));
+                        }
                         break;
                     default:
                         break;
@@ -152,10 +175,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void refresh(){
+    private void refresh() {
         if (pokeFindTask == null) {
-            String bbox=sharedPreferences.getString("bbox","");
-            if(bbox == null || bbox.length() == 0 || bbox.split(",").length !=4){
+            String bbox = sharedPreferences.getString("bbox", "");
+            if (bbox == null || bbox.length() == 0 || bbox.split(",").length != 4) {
                 bbox = DEFAULT_BBOX;
             }
             String url = String.format(requestUrlFormatString, bbox);

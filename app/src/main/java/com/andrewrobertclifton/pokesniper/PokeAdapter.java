@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -63,7 +62,7 @@ public class PokeAdapter extends RecyclerView.Adapter<PokeAdapter.ViewHolder> {
         final Pokemon pokemon = mDataset.get(position);
         holder.txtName.setText(pokemon.getName());
         holder.txtLocation.setText(pokemon.getLat() + "," + pokemon.getLon());
-        holder.txtExpire.setText(String.format("%ds",pokemon.getExpireTime()-System.currentTimeMillis()/1000));
+        holder.txtExpire.setText(String.format("%ds", pokemon.getExpireTime() - System.currentTimeMillis() / 1000));
         holder.button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

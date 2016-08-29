@@ -7,7 +7,7 @@ import java.util.Comparator;
  */
 public class Comparators {
 
-    private static class IDComparator implements Comparator<Pokemon>{
+    private static class IDComparator implements Comparator<Pokemon> {
 
         @Override
         public int compare(Pokemon lhs, Pokemon rhs) {
@@ -17,7 +17,7 @@ public class Comparators {
 
     public static final IDComparator ID_COMPARATOR = new IDComparator();
 
-    private static class NameComparator implements Comparator<Pokemon>{
+    private static class NameComparator implements Comparator<Pokemon> {
 
         @Override
         public int compare(Pokemon lhs, Pokemon rhs) {
@@ -26,4 +26,20 @@ public class Comparators {
     }
 
     public static final NameComparator NAME_COMPARATOR = new NameComparator();
+
+    public static class DistanceComparator implements Comparator<Pokemon> {
+
+        private double lat;
+        private double lon;
+
+        public DistanceComparator(double lat, double lon) {
+            this.lat = lat;
+            this.lon = lon;
+        }
+
+        @Override
+        public int compare(Pokemon lhs, Pokemon rhs) {
+            return Double.compare(lhs.distanceTo(lat, lon), rhs.distanceTo(lat, lon));
+        }
+    }
 }

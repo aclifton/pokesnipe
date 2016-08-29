@@ -84,4 +84,8 @@ public class Pokemon {
     public void setExpireTime(long expireTime) {
         this.expireTime = expireTime;
     }
+
+    public double distanceTo(double lat, double lon) {
+        return Math.sqrt(Math.pow(lat - getLat(), 2.0) + Math.pow(lon - getLon(), 2.0));
+    }
 }

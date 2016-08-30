@@ -9,8 +9,9 @@
     <string name="pref_title_bbox">Bounding Box</string>
     <string name="pref_title_filter">Filter</string>
     <string name="pref_default_display_name"></string>
-
     <string name="pref_title_sort">Sorting Method</string>
+    <string name="pref_title_reverse">Reverse Filter</string>
+
     <string-array name="pref_sort_titles">
         <item>ID</item>
         <item>Name</item>

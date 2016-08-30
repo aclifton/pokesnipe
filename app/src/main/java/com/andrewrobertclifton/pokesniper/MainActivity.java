@@ -33,6 +33,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -141,9 +142,12 @@ public class MainActivity extends AppCompatActivity {
                 }
                 String filterString = sharedPreferences.getString("filter", "");
                 String[] filters = filterString.split(",");
-                ArrayList<Pokemon> filterPokemon = filterString.length() == 0 ? pokemonArray : filter(pokemonArray, filters);
+                boolean reverse = sharedPreferences.getBoolean("reverse", false);
+                ArrayList<Pokemon> filterPokemon = filterString.length() == 0 ?
+                        pokemonArray :
+                        (reverse ? reverseFilter(pokemonArray, filters) : filter(pokemonArray, filters));
                 if (filterPokemon.size() == 0) {
-                    filterPokemon.add(new Pokemon(-1, "Missingno", 0, 0, System.currentTimeMillis()/1000));
+                    filterPokemon.add(new Pokemon(-1, "Missingno", 0, 0, System.currentTimeMillis() / 1000));
                 }
                 int sort = Integer.valueOf(sharedPreferences.getString("sort", "0"));
                 switch (sort) {
@@ -208,6 +212,19 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return filtered;
+    }
+
+    private static ArrayList<Pokemon> reverseFilter(ArrayList<Pokemon> pokemons, String... filters) {
+        HashSet<Pokemon> filtered = new HashSet<>(pokemons);
+        for (Pokemon pokemon : pokemons) {
+            for (String s : filters) {
+                if (s.equalsIgnoreCase(pokemon.getName())) {
+                    filtered.remove(pokemon);
+                    continue;
+                }
+            }
+        }
+        return new ArrayList<>(filtered);
     }
 
 }

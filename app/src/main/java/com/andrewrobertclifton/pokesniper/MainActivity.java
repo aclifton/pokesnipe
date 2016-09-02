@@ -158,6 +158,9 @@ public class MainActivity extends AppCompatActivity {
                         Collections.sort(filterPokemon, Comparators.NAME_COMPARATOR);
                         break;
                     case 2:
+                        Collections.sort(filterPokemon, new Comparators.OrderedNameComparator(filters));
+                        break;
+                    case 3:
                         if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                             ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_REQUEST);
                             pokeFindTask = null;

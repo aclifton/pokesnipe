@@ -15,11 +15,13 @@
     <string-array name="pref_sort_titles">
         <item>ID</item>
         <item>Name</item>
+        <item>Filter Order</item>
         <item>Distance</item>
     </string-array>
     <string-array name="pref_sort_values">
         <item>0</item>
         <item>1</item>
         <item>2</item>
+        <item>3</item>
     </string-array>
 </resources>
